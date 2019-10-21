@@ -86,7 +86,7 @@ function App() {
     <div className="App">
       <Router>
         <Header />
-        <Route exact path="/" render={() => <Slider />} />
+        <Route exact path={["/","/ecomm_react" ]}render={() => <Slider />} />
         <Route
           path="/carrello"
           render={() => (
