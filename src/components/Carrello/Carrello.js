@@ -18,7 +18,7 @@ function Carrello(props) {
             />
           ))}
       </div>
-      <CarrelloTotale refreshPage={props.refreshPage} totale={props.totale} />
+      <CarrelloTotale checkout={props.checkout} totale={props.totale} />
     </div>
   );
 }

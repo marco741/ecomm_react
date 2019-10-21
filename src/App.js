@@ -73,13 +73,18 @@ function App() {
   };
   //-----------
 
-  const refreshPage = () => {
-    window.location.reload(false);
+  const checkout = () => {
+    const newItems = items.map(item => {
+      item.quantity = 0;
+      return item;
+    });
+    setItems(newItems);
+    setTotale(0);
   };
 
   return (
     <div className="App">
-      <Router basename="/ecomm_react">
+      <Router>
         <Header />
         <Route exact path="/" render={() => <Slider />} />
         <Route
@@ -90,7 +95,7 @@ function App() {
               items={items}
               buyItem={buyItem}
               removeItem={removeItem}
-              refreshPage={refreshPage}
+              checkout={checkout}
             />
           )}
         />
