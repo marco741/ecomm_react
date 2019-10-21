@@ -81,9 +81,9 @@ function App() {
     <div className="App">
       <Router>
         <Header />
-        <Route exact path="/" render={() => <Slider />} />
+        <Route exact path="/ecomm_react/" render={() => <Slider />} />
         <Route
-          path="/carrello"
+          path="/ecomm_react/carrello"
           render={() => (
             <Carrello
               totale={totale}
@@ -96,7 +96,7 @@ function App() {
         />
 
         <Route
-          path="/shop"
+          path="/ecomm_react/shop"
           render={() => (
             <Shop items={items} buyItem={buyItem} removeItem={removeItem} />
           )}
