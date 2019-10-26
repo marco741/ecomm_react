@@ -2,14 +2,14 @@ import React from "react";
 import ShopItem from "./ShopItem";
 
 function Shop(props) {
-  const items = props.items;
+  const { items } = props;
 
   return (
     <div className="shop">
-      {items.map((item, i) => (
+      {items.map(item => (
         <ShopItem
-          index={i}
-          key={i}
+          id={item.id}
+          key={item.id}
           item={item}
           buyItem={props.buyItem}
           removeItem={props.removeItem}

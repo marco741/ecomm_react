@@ -1,7 +1,6 @@
 import React from "react";
 
 function CarrelloTotale(props) {
-    
 
   return (
     <div className="carrello__totale">

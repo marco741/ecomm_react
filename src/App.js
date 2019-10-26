@@ -2,83 +2,69 @@ import "./assets/css/fonts.css";
 import "./assets/css/App.css";
 import "./assets/css/slider.css";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/layout/Header.js";
 import Carrello from "./components/Carrello/Carrello.js";
 import Shop from "./components/Shop/Shop.js";
 import Slider from "./components/Slider";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+export const CarrelloContext = React.createContext([]);
 
 function App() {
   const [totale, setTotale] = useState(0);
-  const [items, setItems] = useState([
-    {
-      img: "https://i.kym-cdn.com/entries/icons/original/000/021/807/4d7.png",
-      text: "Questa è la prima descrizione",
-      price: "10.00",
-      quantity: 0
-    },
-    {
-      img: "https://i.kym-cdn.com/entries/icons/original/000/021/807/4d7.png",
-      text: "Questa è la seconda descrizione",
-      price: "20.00",
-      quantity: 0
-    },
-    {
-      img: "https://i.kym-cdn.com/entries/icons/original/000/021/807/4d7.png",
-      text: "Questa è la terza descrizione",
-      price: "14.99",
-      quantity: 0
-    },
-    {
-      img: "https://i.kym-cdn.com/entries/icons/original/000/021/807/4d7.png",
-      text: "Questa è la quarta descrizione",
-      price: "7.89",
-      quantity: 0
-    }
-  ]);
+  const [items, setItems] = useState([]);
+  const [carrelloItems, setCarrelloItems] = useState([]);
 
-  const buyItem = index => {
-    const newItems = items.map((item, i) => {
-      if (i === index) {
-        item.quantity++;
-        console.log(`${i}: ${item.quantity}`);
+  //Fetch
+  useEffect(() => {
+    const fetchdata = async () => {
+      const res = await fetch(
+        "https://5db179198087400014d38a73.mockapi.io/api/v1/products"
+      );
+      setItems(await res.json());
+    };
+    fetchdata();
+  }, []);
+
+  //Calcolo Totale
+  useEffect(() => {
+    setTotale(
+      carrelloItems.reduce((accumulator, carrelloItem) => {
+        return accumulator + carrelloItem.quantity * carrelloItem.cost;
+      }, 0)
+    );
+  }, [carrelloItems]);
+
+  const buyItem = id => {
+    let found = false;
+    carrelloItems.forEach(carrelloItem => {
+      if (carrelloItem.id === id) {
+        carrelloItem.quantity++;
+        found = true;
       }
-      return item;
     });
-    setItems(newItems);
-    calcTot();
+    if (found) setCarrelloItems([...carrelloItems]);
+    else setCarrelloItems([...carrelloItems, { ...getItem(id), quantity: 1 }]);
   };
 
-  const removeItem = index => {
-    const newItems = items.map((item, i) => {
-      if (i === index && item.quantity > 0) {
-        item.quantity--;
-        console.log(`${i}: ${item.quantity}`);
+  const getItem = id => {
+    return items.find(item => item.id === id);
+  };
+
+  const removeItem = id => {
+    carrelloItems.forEach(carrelloItem => {
+      if (carrelloItem.id === id) {
+        carrelloItem.quantity--;
       }
-      return item;
+      return carrelloItem;
     });
-    setItems(newItems);
-    calcTot();
+    setCarrelloItems(
+      carrelloItems.filter(carrelloItem => carrelloItem.quantity > 0)
+    );
   };
-
-  //avrei voluto metterlo in CarrelloTotale.js
-  const calcTot = () => {
-    let newTotale = 0;
-    items.forEach(item => {
-      newTotale += item.quantity * item.price;
-    });
-    newTotale = Math.abs(newTotale.toFixed(2));
-    setTotale(newTotale);
-  };
-  //-----------
 
   const checkout = () => {
-    const newItems = items.map(item => {
-      item.quantity = 0;
-      return item;
-    });
-    setItems(newItems);
+    setCarrelloItems([]);
     setTotale(0);
   };
 
@@ -86,26 +72,27 @@ function App() {
     <div className="App">
       <Router>
         <Header />
-        <Route exact path={["/","/ecomm_react" ]}render={() => <Slider />} />
+        <Route exact path={["/", "/ecomm_react"]} render={() => <Slider />} />
         <Route
           path="/carrello"
           render={() => (
             <Carrello
               totale={totale}
-              items={items}
+              carrelloItems={carrelloItems}
               buyItem={buyItem}
               removeItem={removeItem}
               checkout={checkout}
             />
           )}
         />
-
-        <Route
-          path="/shop"
-          render={() => (
-            <Shop items={items} buyItem={buyItem} removeItem={removeItem} />
-          )}
-        />
+        <CarrelloContext.Provider value={carrelloItems}>
+          <Route
+            path="/shop"
+            render={() => (
+              <Shop items={items} buyItem={buyItem} removeItem={removeItem} />
+            )}
+          />
+        </CarrelloContext.Provider>
       </Router>
     </div>
   );

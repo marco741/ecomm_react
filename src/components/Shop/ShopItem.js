@@ -1,24 +1,38 @@
-import React from "react";
+import React, { useContext } from "react";
+import { CarrelloContext } from "../../App.js";
 
 function ShopItem(props) {
-  const { img, text, price, quantity } = props.item;
+  const { image, name, cost } = props.item;
+
+  const carrelloItems = useContext(CarrelloContext);
+  const getCarrelloItem = id => {
+    return carrelloItems.find(carrelloItem => carrelloItem.id === id);
+  };
+
+  const quantity = !getCarrelloItem(props.id)
+    ? 0
+    : getCarrelloItem(props.id).quantity;
 
   return (
     <div className="shop__item">
-      <img src={img} alt="img" />
-      <p>{`Descrizione: ${text}`}</p>
-      <p className="shop__item__price">{`Price: ${price} €`}</p>
+         <img src={image} alt="img" />
+      
+      <p>{`Nome: ${name}`}</p>
+      
+      <p className="shop__item__price">{`Price: ${cost} €`}</p>
+
       <button
         className="shop__item__add"
-        onClick={() => props.buyItem(props.index)}
+        onClick={() => props.buyItem(props.id)}
       >
         Aggiungi al carrello
       </button>
+
       <div className="shop__item__box">
-        <p>{`Quantità prodotto${props.index + 1}: ${quantity}`}</p>
+        <p>{`Quantità prodotto${props.id}: ${quantity}`}</p>
         <button
           className="shop__item__remove"
-          onClick={() => props.removeItem(props.index)}
+          onClick={() => props.removeItem(props.id)}
         >
           -
         </button>
